@@ -1,16 +1,14 @@
-const axios = require("axios");
-const dotenv = require("dotenv").config();
-
 const argv = require("./config/yargs").argv;
 
-const encodedCity = encodeURI(argv.city);
-const apiKey = process.env.OWM_API_KEY;
+const { getPlace } = require("./utils/getPlace");
 
-const instance = axios.create({
-  baseURL: `https://api.openweathermap.org/data/2.5/weather?q=${encodedCity}&appId=${apiKey}`,
-});
+const getInfo = async (city) => {
+  try {
+    const { cityName, temp } = await getPlace(city);
+    return `La temperatura en la ciudad de ${cityName} es de ${temp}°C.`;
+  } catch (error) {
+    return `No hay resultados para ${city}.`;
+  }
+};
 
-instance
-  .get()
-  .then((resp) => console.log(resp.data))
-  .catch((err) => console.log(err));
+getInfo(argv.city).then(console.log).catch(console.log);
